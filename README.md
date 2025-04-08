@@ -1,7 +1,9 @@
 # Chinook Music Store Analysis Dashboard
 
 ## Project Title and Description
-The Chinook Music Store Analysis Dashboard provides comprehensive analysis of the Chinook digital music store database, answering key business questions to help optimize operations and increase revenue.
+The Chinook Music Store Analysis Dashboard provides comprehensive analysis of the Chinook digital music store database, answering key business questions to help optimize operations and increase revenue. The database was managed and explored using DB Browser for SQLite.
+
+![Just a simple capture ](Capture%20d'écran%202025-02-20%20092651.png)
 
 ## Installation Instructions
 1. Clone the repository to your local machine.
