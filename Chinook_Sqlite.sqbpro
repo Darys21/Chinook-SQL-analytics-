@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/USER/Downloads/Chinook_Sqlite.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="4041"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Customer" custom_title="0" dock_id="1" table="4,8:mainCustomer"/><dock_state state="000000ff00000000fd00000001000000020000061c00000406fc0100000001fb000000160064006f0063006b00420072006f007700730065003101000000000000061c0000011f00ffffff0000061c0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Album" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="56"/><column index="2" value="300"/><column index="3" value="53"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Artist" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="51"/><column index="2" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Customer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="74"/><column index="2" value="78"/><column index="3" value="101"/><column index="4" value="300"/><column index="5" value="300"/><column index="6" value="156"/><column index="7" value="54"/><column index="8" value="117"/><column index="9" value="85"/><column index="10" value="156"/><column index="11" value="148"/><column index="12" value="234"/><column index="13" value="88"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Employee" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="74"/><column index="2" value="70"/><column index="3" value="70"/><column index="4" value="156"/><column index="5" value="67"/><column index="6" value="156"/><column index="7" value="156"/><column index="8" value="218"/><column index="9" value="85"/><column index="10" value="38"/><column index="11" value="54"/><column index="12" value="70"/><column index="13" value="140"/><column index="14" value="140"/><column index="15" value="195"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="InvoiceLine" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="85"/><column index="2" value="64"/><column index="3" value="53"/><column index="4" value="59"/><column index="5" value="56"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Track" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="51"/><column index="2" value="300"/><column index="3" value="58"/><column index="4" value="83"/><column index="5" value="56"/><column index="6" value="300"/><column index="7" value="76"/><column index="8" value="70"/><column index="9" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="Clients non americains">SELECT FirstName || '  ' || LastName AS FullName, CustomerId, Country
+FROM Customer
+WHERE Country &lt;&gt; 'USA';</sql><sql name="Clients bresiliens ">SELECT FirstName || '  ' || LastName AS FullName, CustomerId, Country
+FROM Customer
+WHERE Country = 'Brazil';</sql><sql name="Factures des clients bresiliens ">SELECT
+	c.FirstName || ' ' || c.LastName AS FullName, 
+	i.InvoiceId,
+	i.InvoiceDate,
+	i.BillingCountry
+FROM
+	Customer c 
+JOIN
+	Invoice i ON c.CustomerId = i.CustomerId
+WHERE
+	c.Country = 'Brazil'
+	
+</sql><sql name="Sales Support Agent employee">SELECT 
+	e.FirstName || ' ' || e. LastName AS FullName,
+	e.Title
+FROM
+	Employee e
+WHERE
+	Title = 'Sales Support Agent'</sql><sql name="pays uniques dans les factures ">SELECT DISTINCT BillingCountry 
+FROM Invoice;</sql><sql name="Facture par agent de vente">SELECT
+	e.FirstName || ' '|| e.LastName AS SalesFullName,
+	i.InvoiceId,
+	i.InvoiceDate,
+	i.BillingCountry
+FROM
+	Employee e 
+JOIN
+	Customer c ON e.EmployeeId = c.SupportRepId
+JOIN
+	Invoice i On c.CustomerId = i.CustomerId
+ORDER BY
+	SalesFullName, i.InvoiceDate;</sql><sql name="Details des Factures ">SELECT
+	i.InvoiceId,
+	c.FirstName || ' ' || c.LastName AS CustomerName,
+	i.BillingCountry,
+	e.FirstName || ' ' || e.LastName AS SalesFullName,
+	sum(il.Quantity * il.UnitPrice ) AS TotalAmount
+FROM
+	Invoice i 
+JOIN
+	InvoiceLine il ON i .InvoiceId = il.InvoiceId
+JOIN
+	Customer c ON i.CustomerId = c.CustomerId
+JOIN
+	Employee e ON c.SupportRepId = e.EmployeeId
+GROUP BY
+	i.InvoiceId,
+	CustomerName,
+	i.BillingCountry,
+	SalesFullName
+ORDER BY
+	i.InvoiceId;</sql><sql name="Ventes par annees ">SELECT
+	strftime('%Y', InvoiceDate) AS InvoiceYear,
+	COUNT(InvoiceID) AS TotalInvoices,
+	SUM(Total) AS TotalSale
+FROM 
+	Invoice
+WHERE
+	InvoiceYear IN ('2009', '2011')
+GROUP BY 
+	InvoiceYear
+ORDER BY 
+	InvoiceYear;
+	</sql><sql name="Articles pour une facture donnée ">SELECT COUNT(*) AS NumbersOfItems
+FROM 
+	InvoiceLine
+WHERE
+	InvoiceId = 37;</sql><sql name="Articles par facture">SELECT 
+	InvoiceId, COUNT(*) AS NumbersOfItems
+FROM
+	InvoiceLine
+GROUP BY 
+	InvoiceId
+ORDER BY
+	InvoiceId;
+	
+
+</sql><sql name="Nom des morceaux ">SELECT
+	il.InvoiceId, t.Name AS TrackName
+FROM
+	InvoiceLine il 
+JOIN
+	Track t on il.TrackId = t.TrackId
+ORDER BY il.InvoiceId;</sql><sql name="Morceaux et artistes "> SELECT 
+	il.InvoiceId, t.Name AS Trackname, ar.Name AS ArtistName
+FROM 
+	invoiceLine il 
+JOIN
+	Track t USING (TrackId)
+JOIN
+	Album ar USINg (AlbumId)
+JOIN
+	Artist ar USING (ArtistId)
+ORDER BY 
+	il.InvoiceId;
+	</sql><sql name="Nombre de factures par pays ">SELECT 
+	BillingCountry, COUNT(InvoiceId) AS NumberOfInvoices
+FROM
+	Invoice 
+GROUP BY 
+	BillingCountry
+ORDER BY
+	NumberOfInvoices DESC;</sql><sql name="Nombre de morceaux par playlist ">SELECT 
+	p.Name AS PlaylistName, COUNT(pt.TrackId) AS NumberOfTracks
+FROM 
+	Playlist p
+JOIN 
+	PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId
+GROUP BY 
+	p.PlaylistId, p.Name
+ORDER BY 
+	NumberOfTracks DESC;</sql><sql name="Liste des morceaux sans les IDs ">SELECT
+	t.Name AS TrackName, al.Title AS AlbumName, mt.Name AS  MediaType, g.Name AS Genre
+FROM 
+	Track t 
+JOIN	
+	Album al USING (AlbumId)
+JOIN
+	MediaType mt USING ( MediaTypeId) 
+JOIN
+	Genre g USING (GenreId)
+ORDER BY 
+	AlbumName, TrackName;
+</sql><sql name="Factures  et articles ">SELECT
+	i.InvoiceId, COUNT(il.InvoiceLineId) AS NumberOfItems 
+FROM 
+	Invoice i 
+JOIN
+	InvoiceLine il ON i.InvoiceId = il.Invoiceid 
+GROUP BY i.InvoiceId
+ORDER BY i.InvoiceId;</sql><sql name="Ventes par agents de vente ">SELECT
+	e.FirstName || ' ' || e.LastName AS SalesAgent,SUM(i.Total) AS TotalSales
+FROM 
+	Employee e 
+JOIN
+	Customer c ON e.EmployeeId = c.SupportRepId
+JOIN 
+	Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY 
+	SalesAgent
+ORDER BY TotalSales DESC;</sql><sql name="Meilleur agent de vente en 2009">SELECT 
+	e.FirstName || ' ' || e.LastName AS SalesAgent,
+       SUM(i.Total) AS TotalSales
+FROM 
+	Employee e
+JOIN 
+	Customer c ON e.EmployeeId = c.SupportRepId
+JOIN 
+	Invoice i ON c.CustomerId = i.CustomerId
+WHERE 
+	strftime('%Y', i.InvoiceDate) = '2009'
+GROUP BY 
+	SalesAgent
+ORDER BY 
+	 T   otalSales DESC
+LIMIT 1;</sql><sql name="Meilleur agent de vente en 2010">SELECT 
+	e.FirstName || ' ' || e.LastName AS SalesAgent,
+       SUM(i.Total) AS TotalSales
+FROM 
+	Employee e
+JOIN 
+	Customer c ON e.EmployeeId = c.SupportRepId
+JOIN 
+	Invoice i ON c.CustomerId = i.CustomerId
+WHERE 
+	strftime('%Y', i.InvoiceDate) = '2010'
+GROUP BY 
+	SalesAgent
+ORDER BY 
+	TotalSales DESC
+LIMIT 1;</sql><sql name="Meilleur agent de vente global ">SELECT e.FirstName || ' ' || e.LastName AS SalesAgent,
+       SUM(i.Total) AS TotalSales
+FROM Employee e
+JOIN Customer c ON e.EmployeeId = c.SupportRepId
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY SalesAgent
+ORDER BY TotalSales DESC
+LIMIT 1;</sql><sql name="client par agent  de vente ">SELECT e.FirstName || ' ' || e.LastName AS SalesAgent,
+       COUNT(c.CustomerId) AS NumberOfClients
+FROM Employee e
+JOIN Customer c ON e.EmployeeId = c.SupportRepId
+GROUP BY SalesAgent
+ORDER BY NumberOfClients DESC;</sql><sql name="Ventes totals par pays ">SELECT i.BillingCountry AS Country,
+	SUM(i.Total) AS TotalSales 
+FROM
+	Invoice i 
+GROUP BY 
+	i.BillingCountry
+ORDER BY 
+	TotalSales DESC;
+</sql><sql name="Morceau le plus achté en 2013">SELECT 
+	t.Name AS TrackName, COUNT(il.TrackId) AS PurchaseCount
+FROM
+	InvoiceLine il
+JOIN
+	Track t ON il.TrackId = t.TrackId
+JOIN
+	Invoice i ON il.InvoiceId = i.InvoiceId
+WHERE 
+	strftime('%Y', i.InvoiceDate) = '2013'
+GROUP BY 
+	t.TrackId, t.Name
+ORDER BY
+	PurchaseCount DESC
+LIMIT 1;</sql><sql name="Top 5 morceaux les plus achetés ">SELECT t.Name AS TrackName, COUNT(il.TrackId) AS PurchaseCount
+FROM InvoiceLine il
+JOIN Track t ON il.TrackId = t.TrackId
+GROUP BY t.TrackId, t.Name
+ORDER BY PurchaseCount DESC
+LIMIT 5;
+</sql><sql name="top 3 artistes les plus vendus ">SELECT t.Name AS TrackName, COUNT(il.TrackId) AS PurchaseCount
+FROM InvoiceLine il
+JOIN Track t ON il.TrackId = t.TrackId
+GROUP BY t.TrackId, t.Name
+ORDER BY PurchaseCount DESC
+LIMIT 5;</sql><sql name="Type de media le plus acheté">SELECT mt.Name AS MediaType, COUNT(il.TrackId) AS TotalPurchases
+FROM InvoiceLine il
+JOIN Track t ON il.TrackId = t.TrackId
+JOIN MediaType mt ON t.MediaTypeId = mt.MediaTypeId
+GROUP BY mt.MediaTypeId, mt.Name
+ORDER BY TotalPurchases DESC
+LIMIT 1;</sql><current_tab id="25"/></tab_sql></sqlb_project>
